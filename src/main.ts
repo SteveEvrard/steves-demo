@@ -9,6 +9,7 @@ import InputText from 'primevue/inputtext';
 import ProgressSpinner from 'primevue/progressspinner';
 import ToastService from 'primevue/toastservice';
 import Toast from 'primevue/toast';
+import ListBox from 'primevue/listbox';
 
 import 'primevue/resources/themes/saga-blue/theme.css';
 import 'primevue/resources/primevue.min.css';
@@ -27,5 +28,6 @@ app.component('InputText', InputText);
 app.component('Button', Button);
 app.component('ProgressSpinner', ProgressSpinner);
 app.component('Toast', Toast);
+app.component('ListBox', ListBox);
 
 app.mount('#app')

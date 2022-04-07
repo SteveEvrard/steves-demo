@@ -1,8 +1,10 @@
 <template>
   <div>
     <div class="title">Steve's Demo</div>
+    <div v-if="getNetwork()" class="network-warning">Please switch network to Rinkeby</div>
     <div v-if="account" class="wallet-display"><span><i class="pi pi-wallet"></i></span> {{ trimAccount(account) }}</div>
     <ConnectButton/>
+    <TokenLists/>
   </div>
 </template>
 
@@ -11,10 +13,11 @@ import { onMounted } from 'vue';
 import { useUserStore } from './stores/user';
 import ConnectButton from './components/ConnectButton.vue'
 import { storeToRefs } from 'pinia';
+import TokenLists from './components/TokenLists.vue';
 
 const userStore = useUserStore();
 const { getAccount } = useUserStore();
-const { account } = storeToRefs(userStore); 
+const { account } = storeToRefs(userStore);
 
 onMounted(() => {
   getAccount();
@@ -22,6 +25,10 @@ onMounted(() => {
 
 const trimAccount = (account: string) => {
   return account.substring(0, 6) + '...' + account.substring(38);
+}
+
+const getNetwork = () => {
+  return window.ethereum.networkVersion != '4';
 }
 </script>
 
@@ -41,5 +48,11 @@ const trimAccount = (account: string) => {
   font-weight: bold;
   margin-right: 1vw;
   text-align: right;
+}
+
+.network-warning {
+  text-align: center;
+  background-color: goldenrod;
+  color: black;
 }
 </style>

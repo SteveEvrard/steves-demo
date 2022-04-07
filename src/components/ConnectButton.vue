@@ -7,7 +7,6 @@
 
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import { toRef } from 'vue';
 import { useUserStore } from '../stores/user';
 
 const userStore = useUserStore()

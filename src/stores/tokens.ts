@@ -6,25 +6,23 @@ import TokenService from '../services/TokenService';
 import { useUserStore } from './user';
 
 export const useTokensStore = defineStore('tokens', () => {
-    const userStore = useUserStore();
     const erc20Tokens = ref<ERC20Token[]>([]);
     const nfts = ref<NFT[]>([]);
-    const { account } = storeToRefs(userStore);
 
-    const getERC20Tokens = async () => {
+    const getERC20Tokens = async (address: string) => {
 
-        await TokenService.getAllERC20Tokens(account.value).then(resp => {
+        await TokenService.getAllERC20Tokens(address).then(resp => {
             erc20Tokens.value = resp.data;
         }); 
 
     }
 
-    const getNFTs = async () => {
+    const getNFTs = async (address: string) => {
         
-        await TokenService.getAllNFTs(account.value).then(resp => {
-            nfts.value = resp.data.results;
-            // console.log(resp)
-        })
+        await TokenService.getAllNFTs(address).then(resp => {
+            nfts.value = resp.data.result;
+        });
+        
     }
 
     return { getERC20Tokens, getNFTs, nfts, erc20Tokens }
