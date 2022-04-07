@@ -5,9 +5,9 @@
                 <template #header>
                     <div class="header">NFTs</div>
                 </template>
-                <template #option="slotProps">
+                <template #option="token">
                     <div>
-                        <div>{{slotProps.option.name ? slotProps.option.name : 'N/A'}}: {{slotProps.option.token_id}} ({{slotProps.option.contract_type}})</div>
+                        <div>{{displayNFT(token.option)}}</div>
                     </div>
                 </template>                      
             </ListBox>
@@ -17,9 +17,9 @@
                 <template #header>
                     <div class="header">Tokens</div>
                 </template>
-                <template #option="slotProps">
+                <template #option="token">
                     <div>
-                        <div>{{formatToken(slotProps.option)}} {{slotProps.option.name}}</div>
+                        <div>{{displayERC20(token.option)}}</div>
                     </div>
                 </template>                      
             </ListBox>
@@ -29,9 +29,11 @@
                 <template #header>
                     <div class="header">Selected</div>
                 </template>
-                <template #option="slotProps">
+                <template #option="token: ERC20Token | NFT">
                     <div>
-                        <div>{{slotProps.option.contract_type == 'ERC1155' ? '' : formatToken(slotProps.option)}} {{slotProps.option.name}}</div>
+                        <div>
+                            {{(token.option.contract_type == 'ERC1155' || token.option.contract_type == 'ERC721') ? displayNFT(token.option) : displayERC20(token.option)}} 
+                        </div>
                     </div>
                 </template>                      
             </ListBox>
@@ -54,6 +56,18 @@ const selectedTokens = ref<Array<ERC20Token | NFT>>([]);
 
 const formatToken = (token: ERC20Token) => {
     return ethers.utils.formatUnits(BigNumber.from(token.balance), token.decimals)
+}
+
+const validateName = (token: ERC20Token | NFT) => {
+    return token.name ? token.name : 'Unknown';
+}
+
+const displayNFT = (token: NFT) => {
+    return `${validateName(token)}: ${token.token_id} (${token.contract_type})`;
+}
+
+const displayERC20 = (token: ERC20Token) => {
+    return `${formatToken(token)} ${token.name}`;
 }
 </script>
 
