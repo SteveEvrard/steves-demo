@@ -21,7 +21,6 @@ export const useUserStore = defineStore('user', () => {
     
     const connectWallet = async () => {
         connecting.value = true;
-        console.log('connecting', connecting.value);
         
         const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' })
           .catch(() => {

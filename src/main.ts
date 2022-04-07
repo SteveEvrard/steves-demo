@@ -7,6 +7,8 @@ import PrimeVue from 'primevue/config';
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import ProgressSpinner from 'primevue/progressspinner';
+import ToastService from 'primevue/toastservice';
+import Toast from 'primevue/toast';
 
 import 'primevue/resources/themes/saga-blue/theme.css';
 import 'primevue/resources/primevue.min.css';
@@ -16,12 +18,14 @@ const app = createApp(App)
 
 app.config.devtools = true;
 
-app.use(createPinia())
-app.use(router)
+app.use(createPinia());
+app.use(router);
 app.use(PrimeVue);
+app.use(ToastService);
 
 app.component('InputText', InputText);
 app.component('Button', Button);
 app.component('ProgressSpinner', ProgressSpinner);
+app.component('Toast', Toast);
 
 app.mount('#app')

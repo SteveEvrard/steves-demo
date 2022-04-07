@@ -12,7 +12,7 @@ import { useUserStore } from './stores/user';
 import ConnectButton from './components/ConnectButton.vue'
 import { storeToRefs } from 'pinia';
 
-const userStore = useUserStore()
+const userStore = useUserStore();
 const { getAccount } = useUserStore();
 const { account } = storeToRefs(userStore); 
 
