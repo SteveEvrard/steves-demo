@@ -3,7 +3,6 @@ import type NFT from '@/types/NFT';
 import { acceptHMRUpdate, defineStore, storeToRefs } from 'pinia';
 import { ref } from 'vue';
 import TokenService from '../services/TokenService';
-import { useUserStore } from './user';
 
 export const useTokensStore = defineStore('tokens', () => {
     const erc20Tokens = ref<ERC20Token[]>([]);
@@ -22,7 +21,7 @@ export const useTokensStore = defineStore('tokens', () => {
         await TokenService.getAllNFTs(address).then(resp => {
             nfts.value = resp.data.result;
         });
-        
+
     }
 
     return { getERC20Tokens, getNFTs, nfts, erc20Tokens }

@@ -32,11 +32,11 @@ export const useUserStore = defineStore('user', () => {
             displayConnect.value = true;
           });
       
-        getERC20Tokens(account.value);
-        getNFTs(account.value);
         account.value = accounts[0];
         displayConnect.value = false;
         connecting.value = false;
+        getERC20Tokens(account.value);
+        getNFTs(account.value);
     }
 
     return { connectWallet, getAccount, account, connecting, displayConnect }

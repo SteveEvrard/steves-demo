@@ -1,11 +1,11 @@
 <template>
     <div class="list-container">
         <div>
-            <ListBox style="width:20vw" listStyle="height:25vh" v-model="selectedTokens" :options="nfts" :multiple="true" :filter="true" optionLabel="name">
+            <ListBox @click="checkAssetCount()" style="width: 20vw" listStyle="height:25vh" v-model="selectedTokens" :options="nfts" :multiple="true" :filter="true" optionLabel="name">
                 <template #header>
                     <div class="header">NFTs</div>
                 </template>
-                <template #option="token">
+                <template :style="[selectedTokens.length >= 10 ? {'pointer-events': 'none'} : {}]" #option="token">
                     <div>
                         <div>{{displayNFT(token.option)}}</div>
                     </div>
@@ -13,7 +13,7 @@
             </ListBox>
         </div>
         <div>
-            <ListBox style="width:20vw" listStyle="height:25vh" v-model="selectedTokens" :options="erc20Tokens" :multiple="true" :filter="true" optionLabel="name">
+            <ListBox @click="checkAssetCount()" style="width: 20vw" listStyle="height:25vh" v-model="selectedTokens" :options="erc20Tokens" :multiple="true" :filter="true" optionLabel="name">
                 <template #header>
                     <div class="header">Tokens</div>
                 </template>
@@ -25,9 +25,9 @@
             </ListBox>
         </div>
         <div>
-            <ListBox style="width:20vw" listStyle="height:30vh" :options="selectedTokens" :multiple="true" optionLabel="name">
+            <ListBox style="width: 20vw" listStyle="height:25vh" :options="selectedTokens" :multiple="true" optionLabel="name">
                 <template #header>
-                    <div class="header">Selected</div>
+                    <div class="header">{{selectedTokens.length}} Selected</div>
                 </template>
                 <template #option="token: ERC20Token | NFT">
                     <div>
@@ -37,7 +37,11 @@
                     </div>
                 </template>                      
             </ListBox>
+            <Button :disabled="selectedTokens.length < 1 || selectedTokens.length >= 11" style="width: 20vw; margin-top: 1vw; text-align: center;">Bundle Tokens</Button>
         </div>
+    </div>
+    <div>
+        <Toast position="bottom-center" />
     </div>
 </template>
 
@@ -48,11 +52,19 @@ import { ref } from 'vue';
 import type NFT from '@/types/NFT';
 import type ERC20Token from '@/types/ERC20Token';
 import { ethers, BigNumber } from 'ethers';
+import { useToast } from "primevue/usetoast";
 
 const tokensStore = useTokensStore();
 const { nfts, erc20Tokens } = storeToRefs(tokensStore);
-const selectedNFTs = ref<NFT[]>([]);
 const selectedTokens = ref<Array<ERC20Token | NFT>>([]);
+const toast = useToast();
+
+const checkDisabled = () => {
+    if(selectedTokens.value.length < 10) {
+        return false;
+    }
+    return true;
+}
 
 const formatToken = (token: ERC20Token) => {
     return ethers.utils.formatUnits(BigNumber.from(token.balance), token.decimals)
@@ -69,6 +81,12 @@ const displayNFT = (token: NFT) => {
 const displayERC20 = (token: ERC20Token) => {
     return `${formatToken(token)} ${token.name}`;
 }
+
+const checkAssetCount = () => {
+    if(selectedTokens.value.length >= 10) {
+        toast.add({severity: 'warn', summary: 'Warning', detail: 'Can only bundle up to 10 assets. Unselect current assets to add more.', life: 3000});
+    }
+}
 </script>
 
 <style>
@@ -80,5 +98,9 @@ const displayERC20 = (token: ERC20Token) => {
 .header {
     text-align: center;
     font-size: 2vw;
+}
+
+.button {
+    
 }
 </style>
