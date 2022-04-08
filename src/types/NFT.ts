@@ -5,7 +5,7 @@ export default interface NFT {
     owner_of: string,
     block_number: string,
     amount: string,
-    contract_type: string,
+    contract_type: 'ERC721' | 'ERC1155',
     name: string,
     symbol: string,
     token_uri: string,

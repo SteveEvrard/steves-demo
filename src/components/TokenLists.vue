@@ -25,7 +25,7 @@
             </ListBox>
         </div>
         <div>
-            <ListBox style="width: 20vw" listStyle="height:25vh" :options="selectedTokens" :multiple="true" optionLabel="name">
+            <ListBox v-if="!processing" style="width: 20vw" listStyle="height:25vh" :options="selectedTokens" :multiple="true" optionLabel="name">
                 <template #header>
                     <div class="header">{{selectedTokens.length}} Selected</div>
                 </template>
@@ -37,7 +37,9 @@
                     </div>
                 </template>                      
             </ListBox>
-            <Button :disabled="selectedTokens.length < 1 || selectedTokens.length >= 11" style="width: 20vw; margin-top: 1vw; text-align: center;">Bundle Tokens</Button>
+            <ProgressSpinner v-if="processing" style="width: 20vw" strokeWidth="5"/>
+            <p v-if="processing" class="loading-text">Processing Transaction Now...</p>
+            <Button v-if="!processing" @click="bundleTokens" :disabled="selectedTokens.length < 1 || selectedTokens.length >= 11" style="width: 20vw; margin-top: 1vw; text-align: center;">Bundle Tokens</Button>
         </div>
     </div>
     <div>
@@ -51,19 +53,57 @@ import { storeToRefs } from 'pinia';
 import { ref } from 'vue';
 import type NFT from '@/types/NFT';
 import type ERC20Token from '@/types/ERC20Token';
+import type Asset from '@/types/Asset';
 import { ethers, BigNumber } from 'ethers';
 import { useToast } from "primevue/usetoast";
+import { ContractWithSigner } from '@/ethereum/ethers.ts';
+import { useUserStore } from '@/stores/user';
+import { checkERC20Approval, checkNFTApproval } from '@/ethereum/ContractUtil';
 
+const requiresApproval = ref<boolean>(false);
+const userStore = useUserStore();
 const tokensStore = useTokensStore();
 const { nfts, erc20Tokens } = storeToRefs(tokensStore);
+const { account } = storeToRefs(userStore);
 const selectedTokens = ref<Array<ERC20Token | NFT>>([]);
 const toast = useToast();
+const processing = ref<boolean>(false);
 
-const checkDisabled = () => {
-    if(selectedTokens.value.length < 10) {
-        return false;
+const bundleTokens = () => {
+    requiresApproval.value = false;
+    processing.value = true;
+    const tokenBundle: Asset[] = selectedTokens.value.map((token: NFT | ERC20Token) => {
+        token.contract_type == 'ERC20' ? checkERC20Approval(token, account.value) : checkNFTApproval(token, account.value);
+        return createAsset(token);
+    });
+    if(!requiresApproval.value) {
+        ContractWithSigner.create(tokenBundle)
+            .then(() => subscribeToContractBundle())
+            .catch(() => {
+                selectedTokens.value = []
+                processing.value = false;
+            });
     }
-    return true;
+}
+
+const createAsset = (token: NFT | ERC20Token) => {
+    if(token.contract_type != 'ERC20') {
+        const asset: Asset = {
+            assetAddress: token.token_address,
+            category: token.contract_type == 'ERC721' ? 1 : 2,
+            amount: 1,
+            id: Number(token.token_id)
+        };
+        return asset;
+    } else {
+        const asset: Asset = {
+            assetAddress: token.token_address,
+            category: 0,
+            amount: BigNumber.from(token.balance).toBigInt(),
+            id: Number(token.token_id)
+        };
+        return asset;
+    }
 }
 
 const formatToken = (token: ERC20Token) => {
@@ -83,9 +123,17 @@ const displayERC20 = (token: ERC20Token) => {
 }
 
 const checkAssetCount = () => {
-    if(selectedTokens.value.length >= 10) {
+    if(selectedTokens.value.length > 10) {
         toast.add({severity: 'warn', summary: 'Warning', detail: 'Can only bundle up to 10 assets. Unselect current assets to add more.', life: 3000});
     }
+}
+
+const subscribeToContractBundle = () => {
+  ContractWithSigner.on(ContractWithSigner.filters.BundleCreated(null, account.value), () => {
+    selectedTokens.value = [];
+    toast.add({severity: 'success', summary: 'Success!', detail: 'Bundle successfully created on the blockchain!', life: 3000})
+    processing.value = false;
+  })
 }
 </script>
 
@@ -100,7 +148,8 @@ const checkAssetCount = () => {
     font-size: 2vw;
 }
 
-.button {
-    
+.loading-text {
+    text-align: center;
+    color: #00ffe0;
 }
 </style>

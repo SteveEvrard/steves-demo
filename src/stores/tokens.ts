@@ -11,7 +11,9 @@ export const useTokensStore = defineStore('tokens', () => {
     const getERC20Tokens = async (address: string) => {
 
         await TokenService.getAllERC20Tokens(address).then(resp => {
-            erc20Tokens.value = resp.data;
+            erc20Tokens.value = resp.data.map((token: ERC20Token) => {
+                return {...token, contract_type: 'ERC20', token_id: 0}
+            });
         }); 
 
     }
@@ -19,7 +21,9 @@ export const useTokensStore = defineStore('tokens', () => {
     const getNFTs = async (address: string) => {
         
         await TokenService.getAllNFTs(address).then(resp => {
-            nfts.value = resp.data.result;
+            nfts.value = resp.data.result.filter((token: NFT) => {
+                return token.token_address != '0xd6d6ba13fde7df9cb4014c372fae713854d4e84c';
+            });
         });
 
     }

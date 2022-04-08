@@ -1,6 +1,6 @@
 import { acceptHMRUpdate, defineStore } from 'pinia';
 import { ref } from 'vue';
-import { signer } from '../ethereum/ethers.js';
+import { signer } from '../ethereum/ethers.ts';
 import { useTokensStore } from './tokens.js';
 
 export const useUserStore = defineStore('user', () => {

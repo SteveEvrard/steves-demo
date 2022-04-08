@@ -7,6 +7,7 @@ import PrimeVue from 'primevue/config';
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import ProgressSpinner from 'primevue/progressspinner';
+import ProgressBar from 'primevue/progressbar';
 import ToastService from 'primevue/toastservice';
 import Toast from 'primevue/toast';
 import ListBox from 'primevue/listbox';
@@ -29,5 +30,6 @@ app.component('Button', Button);
 app.component('ProgressSpinner', ProgressSpinner);
 app.component('Toast', Toast);
 app.component('ListBox', ListBox);
+app.component('ProgressBar', ProgressBar);
 
 app.mount('#app')
