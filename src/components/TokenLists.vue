@@ -71,7 +71,7 @@ import { ethers, BigNumber } from 'ethers';
 import { useToast } from "primevue/usetoast";
 import { ContractWithSigner } from '@/ethereum/ethers';
 import { useUserStore } from '@/stores/user';
-import { checkERC20Approval, checkNFTApproval, setERC20Approval, setNFTApproval } from '@/ethereum/ContractUtil';
+import { setERC20Approval, setNFTApproval } from '@/ethereum/ContractUtil';
 
 const requiresApproval = ref<boolean>(false);
 const userStore = useUserStore();

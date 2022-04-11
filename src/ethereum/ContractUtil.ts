@@ -29,7 +29,8 @@ export const checkERC20Approval = async (token: ERC20Token, account: string) => 
     const erc20Contract = new ethers.Contract(token.token_address, erc20ABI, provider);
     const erc20withSigner = erc20Contract.connect(provider.getSigner());
     const allowance: BigNumber = await erc20withSigner.allowance(account, '0xd6d6ba13fDe7DF9cb4014c372fAE713854D4e84c');
-    const approved: boolean = BigNumber.from(allowance).toBigInt() > 0;
+    // const approved: boolean = BigNumber.from(allowance).toBigInt() > 0;
+    const approved: boolean = BigNumber.from(allowance).toBigInt() >= BigNumber.from(token.balance).toBigInt();
     if(!approved) {
         unapprovedTokens.value = [...unapprovedTokens.value, token];
         erc20Tokens.value = erc20Tokens.value.filter((currentToken: ERC20Token) => {
