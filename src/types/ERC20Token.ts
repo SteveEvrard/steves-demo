@@ -7,5 +7,6 @@ export default interface ERC20Token {
     thumbnail: string,
     decimals: string,
     balance: string
-    contract_type: 'ERC20'
+    contract_type: 'ERC20',
+    approved: boolean
 }

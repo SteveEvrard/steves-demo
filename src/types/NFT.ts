@@ -13,5 +13,6 @@ export default interface NFT {
     synced_at: string,
     is_valid: number,
     syncing: number,
-    frozen: number
+    frozen: number,
+    approved: boolean
 }
